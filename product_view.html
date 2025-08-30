@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+<style>body{background: #ededef;margin: 0;padding: 0;display: flex;justify-content: flex-start;flex-wrap: wrap;gap: 30px;}</style>
+  <div class="col-md-7">
+    <div class="card p-3">
+      {% if product.image_filename %}
+        <img src="{{ url_for('uploaded_file', filename=product.image_filename) }}" class="product-img mb-3">
+      {% endif %}
+      <h3>{{ product.name }}</h3>
+      <p class="small-muted">By {{ product.seller_name }}</p>
+      <p>{{ product.description }}</p>
+      <h4>₹{{ product.price }}</h4>
+
+      {% if session.role == 'buyer' %}
+      <form method="post" action="{{ url_for('buy_product', pid=product.id) }}">
+        <button class="btn btn-success">Buy</button>
+      </form>
+      {% endif %}
+
+      {% if session.role == 'investor' %}
+      <form method="post" action="{{ url_for('request_interview', pid=product.id) }}">
+        <button class="btn btn-primary">Request Interview</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="card p-3 mt-3">
+      <h5>Comments</h5>
+      <form method="post">
+        <div class="mb-2"><textarea class="form-control" name="comment" placeholder="Write a comment..." required></textarea></div>
+        <button class="btn btn-outline-primary">Post Comment</button>
+      </form>
+
+      <hr>
+      {% for c in comments %}
+        <div class="mb-2">
+          <div class="small-muted">{{ c.created_at }} — <b>{{ c.username }}</b></div>
+          <div>{{ c.comment }}</div>
+        </div>
+      {% else %}
+        <p class="text-muted">No comments yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h5>Seller Info</h5>
+      <p><b>{{ product.seller_name }}</b></p>
+      <p class="small-muted">You can message or request interview (investors).</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

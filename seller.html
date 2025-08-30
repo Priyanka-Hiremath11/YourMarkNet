@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block content %}
+<style>body{background: #ededef;align-content: start;gap:30px;}</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        YourMark
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+  </nav>
+<div class="row">
+  
+  <!-- Upload product -->
+  <div class="col-md-4">
+    <div class="card p-3 mb-3">
+      <h5>Upload Product</h5>
+      <form method="post" enctype="multipart/form-data">
+        <input class="form-control mb-2" name="name" placeholder="Product name" required>
+        <textarea class="form-control mb-2" name="description" placeholder="Short description"></textarea>
+        <input class="form-control mb-2" name="price" type="number" step="0.01" placeholder="Price (₹)" required>
+        <input class="form-control mb-2" type="file" name="image" accept="image/*">
+        <button class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product listings -->
+  <div class="col-md-4">
+    <div class="card p-3 mb-3">
+      <h5>Your Listings</h5>
+      <div class="row g-3">
+        {% for p in products %}
+        <div class="col-12">
+          <div class="card h-100 p-2">
+            {% if p.image_filename %}
+              <img src="{{ url_for('uploaded_file', filename=p.image_filename) }}" class="product-img mb-2">
+            {% endif %}
+            <h6>{{ p.name }}</h6>
+            <p class="text-muted">{{ p.description or '' }}</p>
+            <p><b>₹{{ p.price }}</b></p>
+            <form method="post" action="{{ url_for('delete_product', pid=p.id) }}" onsubmit="return confirm('Delete this product?')">
+              <button class="btn btn-outline-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+          <p class="text-muted">No products yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>Notifications</h5>
+      {% for n in notifications %}
+      <div class="border rounded p-2 mb-2 {% if not n.is_read %}bg-light{% endif %}">
+        <div class="small text-muted">{{ n.created_at }}</div>
+        <div><b>{{ n.type|capitalize }}</b> - {{ n.message }}</div>
+        {% if n.buyer_name %}<div class="small text-muted">From: {{ n.buyer_name }}</div>{% endif %}
+        {% if n.product_name %}<div class="small text-muted">Product: {{ n.product_name }}</div>{% endif %}
+        <form method="post" action="{{ url_for('mark_notification_read', nid=n.id) }}">
+          <button class="btn btn-sm btn-outline-secondary mt-1">Mark Read</button>
+        </form>
+      </div>
+      {% else %}
+        <p class="text-muted">No notifications yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- Investor requirements -->
+<h5>Investor Requirements</h5>
+<ul class="list-group">
+  {% for req in requirements %}
+    <li class="list-group-item">
+      <strong>{{ req.title }}</strong>: {{ req.requirements }}
+      <form method="POST" action="{{ url_for('seller_dashboard') }}" class="mt-2">
+        <input type="hidden" name="requirement_id" value="{{ req.id }}">
+        <textarea name="pitch" class="form-control mb-2" required></textarea>
+        <button type="submit" class="btn btn-primary btn-sm">Submit Pitch</button>
+      </form>
+      <ul class="mt-2">
+        {% for p in pitch %}
+          <li>Pitch: {{ pitch }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% else %}
+    <li class="list-group-item text-muted">No investor requirements yet.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
+
+<!--
+
+
+<div class="row">
+  <style>body{background: #ededef;margin: 0;padding: 0;display: flex;justify-content: flex-start;flex-wrap: wrap;gap: 30px;}</style>
+  
+    <div class="card p-3 mb-3">
+      
+      <h5>Upload Product</h5>
+      <form method="post" enctype="multipart/form-data">
+        <div class="mb-2">
+          <input class="form-control" name="name" placeholder="Product name" required>
+        </div>
+        <div class="mb-2">
+          <textarea class="form-control" name="description" placeholder="Short description"></textarea>
+        </div>
+        <div class="mb-2">
+          <input class="form-control" name="price" type="number" step="0.01" placeholder="Price (₹)" required>
+        </div>
+        <div class="mb-2">
+          <input class="form-control" type="file" name="image" accept="image/*">
+        </div>
+        <button class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h5>Your Listings</h5>
+      <div class="row row-cols-1 row-cols-sm2 row-cols-md-3 g-3">
+        {% for p in products %}
+        <div class="col">
+          <div class="card h-100 p-2">
+            {% if p.image_filename %}
+              <img src="{{ url_for('uploaded_file', filename=p.image_filename) }}" class="product-img mb-2">
+            {% endif %}
+            <h6>{{ p.name }}</h6>
+            <p class="small-muted">{{ p.description or '' }}</p>
+            <p><b>₹{{ p.price }}</b></p>
+            <form method="post" action="{{ url_for('delete_product', pid=p.id) }}" onsubmit="return confirm('Delete this product?')">
+              <button class="btn btn-outline-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-muted">No products yet.</p>
+  <h2>Investor Requirements</h2>
+  <ul>
+    {% for req in requirements %}
+    <li>
+      <strong>{{req.title}}</strong>: {{req.description}}
+      <form method="POST" action="{{url_for('seller')}}">
+        <input type="hidden" name="req_index" value="{{loop.index0}}">
+        <textarea name="pitch" required></textarea>
+        <button type="submit">Submit pitch</button>
+
+      </form>
+      <ul>
+        {% for pitch in requirements %}
+        <li>Pitch:{{pitch}}</li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="/investor">Go to Investor Page</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h5>Notifications</h5>
+      {% for n in notifications %}
+        <div class="border rounded p-2 mb-2 {% if not n.is_read %}bg-light{% endif %}">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="small-muted">{{ n.created_at }}</div>
+              <div><b>{{ n.type|capitalize }}</b> - {{ n.message }}</div>
+              {% if n.buyer_name %}<div class="small-muted">From: {{ n.buyer_name }}</div>{% endif %}
+              {% if n.product_name %}<div class="small-muted">Product: {{ n.product_name }}</div>{% endif %}
+            </div>
+            <form method="post" action="{{ url_for('mark_notification_read', nid=n.id) }}">
+              
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted">No notifications yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+-->

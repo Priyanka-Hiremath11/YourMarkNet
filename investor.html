@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+body{background: #ededef;align-content: start;gap:30px;}
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <span class="ms-2 fw-bold">YourMarkNet</span>
+      </a>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+  </nav>
+  
+<h3 class="mb-3">Investor Dashboard</h3>
+
+
+<div class="row">
+   {% if session.get('username') %}
+          <span class="head">
+            Welcome, <b>{{ session.username }}</b> ({{ session.role }})
+          </span>
+        {% endif %}
+      
+  {% for p in products %}
+  <div class="col-md-4 mb-4">
+    <div class="card p-2 h-100">
+      {% if p.image_filename %}
+        <img src="{{ url_for('uploaded_file', filename=p.image_filename) }}" class="product-img mb-2">
+      {% endif %}
+      <h6>{{ p.name }}</h6>
+      <p class="text-muted">By {{ p.seller_name }}</p>
+      <p>{{ p.description[:80] }}</p>
+      <p><b>₹{{ p.price }}</b></p>
+      <form method="post" action="{{ url_for('request_interview', pid=p.id) }}">
+        <button class="btn btn-outline-primary btn-sm">Request Interview</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+    <p class="text-muted">No products yet.</p>
+  {% endfor %}
+</div>
+
+<hr>
+
+<h5>Post a New Requirement</h5>
+<form method="POST" action="{{url_for('investor_dashboard')}}" class="mb-3">
+  <input type="text" name="title" class="form-control mb-2" placeholder="Requirement Title" required>
+  <textarea name="requirements" class="form-control mb-2" placeholder="Describe your requirement" required></textarea>
+  <button type="submit" class="btn btn-success">Post Requirement</button>
+  
+</form>
+
+<h5>Investor Requirements</h5>
+<ul class="list-group">
+  {% for r in requirements %}
+    <li class="list-group-item">
+      <strong>{{ r.title }}</strong>: {{ r.requirements }}
+      <ul class="mt-2">
+        {% for p in pitches_by_req.get(r.id, []) %}
+          <li>Pitch from:{{p.seller_name}}: {{ p.pitch }}</li>
+        {% endfor %}
+      </ul>
+      <form method="POST" action="{{ url_for('delete_requirement', req_id=r.id) }}" style="display:inline;">
+       <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    </li>
+  {% else %}
+    <li class="list-group-item text-muted">No requirements yet.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
+<!--div>
+
+
+  <style>body{background: #ededef;align-content: start;gap:30px;}</style>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <img src="static\logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+    <a class="nav-brand" href="#"> Investor</a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{url_for('dashboard')}}">Home</a>
+         
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('investor_dashboard')}}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('seller_dashboard')}}">Seller Page</a>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+
+
+ {% for p in products %}
+   <div class="col-md-4 mb-3">
+     <div class="card p-2">
+      {% if p.image_filename %}
+        <img src="{{ url_for('uploaded_file', filename=p.image_filename) }}" class="product-img mb-2">
+      {% endif %}
+      <h6>{{ p.name }}</h6>
+      <p class="small-muted">By {{ p.seller_name }}</p>
+      <p>{{ p.description[:80] }}</p>
+      <p><b>₹{{ p.price }}</b></p>
+      <form method="post" action="{{ url_for('request_interview', pid=p.id) }}">
+        <button class="btn btn-outline-primary btn-sm">Request Interview</button>
+      
+      </form>
+      </div>
+    </div>
+  {% else %}
+  <p class="text-muted">No products yet.</p>
+  {% endfor %}
+
+  <p>Post a New Requirement</p>
+  <form method="POST" action="{{url_for('investor_dashboard')}}">
+    <input type="text" name="title" placeholder="Requirement Title" required><br><br>
+    <textarea name="description" placeholder="Describe Your Requirement" required></textarea><br><br>
+    <button type="submit">Post Requirement</button>
+  </form>
+
+  <p>List of Requirements</p>
+  <ul>
+    {% for req in requirement %}
+       <li>
+        <strong>{{req.title}}</strong>: {{req.description}}
+        <ul>
+          {% for pitch in req.pitch %}
+          <li>Pitch:{{pitch}}</li>
+          {% endfor %}
+
+        </ul>
+       </li>
+    {% endfor %}
+  </ul>
+
+
+<div-->
+
+

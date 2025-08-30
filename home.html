@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="text-center w-100">
+    <!--div class="card p-4 shadow-sm"-->
+      <h1 class="app-title display-2 fw-bold mb-3">
+        <span class="gradient-text">YourMarkNet</span>
+      </h1>
+      <style>
+  .gradient-text {
+    background: linear-gradient(90deg, #14023a 0%, #470404 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 2px 4px 12px rgba(106,17,203,0.15);
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    letter-spacing: 2px;
+  }
+</style>
+      <!--img src="logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"-->
+      <style>.app-title{font-size: 48px;color: #000000;font-family:Arial, Helvetica, sans-serif;text-align: center;margin-bottom: 20px;margin: 2px 2px 5px rgba(0,0,0,0.3);margin: 0 auto;}</style>
+      <p class="lead">Connect rural and small sellers with buyers and investors — upload products, pitch, and grow.</p>
+      <div class="mt-3">
+        <style>.mt-3{font-size:20;color: rgb(121, 121, 204);font-family:Arial, Helvetica, sans-serif;text-align: center;margin-bottom: 20px;}</style>
+        <a href="{{ url_for('register') }}" ><button type="submit">Get Started</button></a>
+        <a href="{{ url_for('login') }}" ><button type="submit">Login</button></a>
+      </div>
+    
+  </div>
+</div>
+{% endblock %}
